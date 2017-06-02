@@ -45,22 +45,23 @@ def main():
 
     with open('test.bench') as file_bench:
         for line in file_bench.readlines():
-            line = line.strip()
+            line = line.strip().replace(' ', '')
             if line.startswith('#'):    pass
             elif line.startswith('INPUT'): pass
             elif line.startswith('OUTPUT'): output_port_list.append(line[7:-1])
             elif line:
-                left, right = [x.strip() for x in line.split('=')]
+                left, right = line.split('=')
                 # left_part = line[:line.find('=')].strip()
                 # right_part = line[line.find('=')+1:].strip()
-                function_name, operand_list = right[:right.find('(')], [i.strip() for i in right[right.find('(')+1:-1].split(',')]
+                function_name, operand_list = right[:right.find('(')], right[right.find('(')+1:-1].split(',')
                 # print function_name, operand_list
                 value_dict[left] = function_dict[function_name.lower()]([value_dict[port] for port in operand_list])
             else:   pass
 
     with open('test_1.out', 'w') as file_out:
         for output_port in output_port_list:
-            file_out.write(output_port+' '+str(value_dict[output_port])+'\n')
+            print output_port + ' ' + str(value_dict[output_port])
+            file_out.write(output_port + ' ' + str(value_dict[output_port]) + '\n')
 
     # print input_port_list, output_port_list, value_dict
 
