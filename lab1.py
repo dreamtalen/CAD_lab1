@@ -58,7 +58,7 @@ def main():
                 value_dict[left] = function_dict[function_name.lower()]([value_dict[port] for port in operand_list])
             else:   pass
 
-    with open('test_1.out', 'w') as file_out:
+    with open('mytest.out', 'w') as file_out:
         for output_port in output_port_list:
             print output_port + ' ' + str(value_dict[output_port])
             file_out.write(output_port + ' ' + str(value_dict[output_port]) + '\n')
