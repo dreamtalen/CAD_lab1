@@ -1,3 +1,13 @@
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('bench_file')
+parser.add_argument('val_file')
+
+args = parser.parse_args()
+
+bench_file = args.bench_file
+val_file = args.val_file
+
 def and_gate(operand_list):
     return operand_list[0] and and_gate(operand_list[1:]) if len(operand_list) > 1 else operand_list[0]
 
@@ -37,13 +47,13 @@ def main():
         'buf': buffer_gate
     }
 
-    with open('test.val') as file_val:
+    with open(val_file) as file_val:
         for line in file_val.readlines():
             input_port, val = line.split()
             input_port_list.append(input_port)
             value_dict[input_port] = int(val)
 
-    with open('test.bench') as file_bench:
+    with open(bench_file) as file_bench:
         for line in file_bench.readlines():
             line = line.strip().replace(' ', '')
             if line.startswith('#'):    pass
@@ -55,13 +65,13 @@ def main():
                 # right_part = line[line.find('=')+1:].strip()
                 function_name, operand_list = right[:right.find('(')], right[right.find('(')+1:-1].split(',')
                 # print function_name, operand_list
-                value_dict[left] = function_dict[function_name.lower()]([value_dict[port] for port in operand_list])
+                value_dict[left] = 1 if function_dict[function_name.lower()]([value_dict[port] for port in operand_list]) else 0
             else:   pass
 
-    with open('mytest.out', 'w') as file_out:
-        for output_port in output_port_list:
-            print output_port + ' ' + str(value_dict[output_port])
-            file_out.write(output_port + ' ' + str(value_dict[output_port]) + '\n')
+    # with open('mytest.out', 'w') as file_out:
+    for output_port in output_port_list:
+        print output_port + ' ' + str(value_dict[output_port])
+            # file_out.write(output_port + ' ' + str(value_dict[output_port]) + '\n')
 
     # print input_port_list, output_port_list, value_dict
 
