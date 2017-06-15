@@ -36,6 +36,11 @@ def main():
     input_port_list = []
     output_port_list = []
     value_dict = {}
+    DAG = {}
+    in_degree_dict = {}
+    operand_list_dict = {}
+    port_function_dict = {}
+
     function_dict = {
         'and': and_gate,
         'or': or_gate,
@@ -51,6 +56,8 @@ def main():
         for line in file_val.readlines():
             input_port, val = line.split()
             input_port_list.append(input_port)
+            DAG[input_port] = []
+            in_degree_dict[input_port] = []
             value_dict[input_port] = int(val)
 
     with open(bench_file) as file_bench:
@@ -61,19 +68,38 @@ def main():
             elif line.startswith('OUTPUT'): output_port_list.append(line[7:-1])
             elif line:
                 left, right = line.split('=')
-                # left_part = line[:line.find('=')].strip()
-                # right_part = line[line.find('=')+1:].strip()
                 function_name, operand_list = right[:right.find('(')], right[right.find('(')+1:-1].split(',')
-                # print function_name, operand_list
-                value_dict[left] = 1 if function_dict[function_name.lower()]([value_dict[port] for port in operand_list]) else 0
+                # print left, function_name, operand_list
+                for operand in operand_list:
+                    if operand not in DAG: DAG[operand] = [left]
+                    else: DAG[operand].append(left)
+                port_function_dict[left] = function_name
+                if left not in DAG: DAG[left] = []
+                in_degree_dict[left] = operand_list
+                operand_list_dict[left] = operand_list[:]
             else:   pass
 
-    # with open('mytest.out', 'w') as file_out:
+    # print DAG
+    # print in_degree_dict
+    # print port_function_dict
+    # print operand_list_dict
+
+    # TopoSort
+    topo_result = []
+    while in_degree_dict:
+        for port in [i for i in in_degree_dict.keys() if not in_degree_dict[i]]:
+            topo_result.append(port)
+            for next_port in DAG[port]:
+                in_degree_dict[next_port].remove(port)
+            in_degree_dict.pop(port)
+    # print topo_result
+
+    for port in topo_result:
+        if port in port_function_dict:
+            value_dict[port] = 1 if function_dict[port_function_dict[port].lower()]([value_dict[i] for i in operand_list_dict[port]]) else 0
+
     for output_port in output_port_list:
         print output_port + ' ' + str(value_dict[output_port])
-            # file_out.write(output_port + ' ' + str(value_dict[output_port]) + '\n')
-
-    # print input_port_list, output_port_list, value_dict
 
 if __name__ == '__main__':
     main()
