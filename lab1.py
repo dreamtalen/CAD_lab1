@@ -33,13 +33,10 @@ def buffer_gate(operand_list):
     return operand_list[0]
 
 def main():
-    input_port_list = []
-    output_port_list = []
+    input_port_list, output_port_list = [], []
+    DAG, in_degree_dict = {}, {}
+    operand_list_dict, port_function_dict = {}, {}
     value_dict = {}
-    DAG = {}
-    in_degree_dict = {}
-    operand_list_dict = {}
-    port_function_dict = {}
 
     function_dict = {
         'and': and_gate,
@@ -79,10 +76,7 @@ def main():
                 operand_list_dict[left] = operand_list[:]
             else:   pass
 
-    # print DAG
-    # print in_degree_dict
-    # print port_function_dict
-    # print operand_list_dict
+    # print DAG, in_degree_dict, port_function_dict, operand_list_dict
 
     # TopoSort
     topo_result = []
